@@ -118,5 +118,4 @@ public class VentanaPrincipal extends JFrame {
             comboCaminos.addItem("Camino " + (i + 1));
         }
     }
-
 }
