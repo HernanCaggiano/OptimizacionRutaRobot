@@ -14,20 +14,14 @@ public class ControladorRobot {
         buscador = new BuscadorCaminos(grilla);
     }
 
-    public void ejecutarSinPoda() {
-        if (buscador != null) buscador.buscarSinPoda();
-    }
-
-    public void ejecutarConPoda() {
+    public void ejecutar() {
         if (buscador != null) buscador.buscarConPoda();
     }
 
     public Object[] getResultados() {
         return new Object[]{
             grilla.getFilas() + "x" + grilla.getColumnas(),
-            buscador.getTiempoSinPoda(),
             buscador.getTiempoConPoda(),
-            buscador.getLlamadasSinPoda(),
             buscador.getLlamadasConPoda()
         };
     }

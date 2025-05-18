@@ -5,13 +5,11 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.*;
 import controlador.ControladorRobot;
 import java.awt.*;
-//import java.awt.event.*;
-import java.io.File;
 import java.util.List;
 
 public class VentanaPrincipal extends JFrame {
 	private static final long serialVersionUID = 1L;
-	private ControladorRobot controlador;
+    private ControladorRobot controlador;
     private JTable tablaResultados;
     private JComboBox<String> comboCaminos;
     private DefaultTableModel modeloResultados;
@@ -29,18 +27,16 @@ public class VentanaPrincipal extends JFrame {
 
         JPanel panelBotones = new JPanel();
         JButton btnCargar = new JButton("Cargar Archivo");
-        JButton btnSinPoda = new JButton("Ejecutar Sin Poda");
-        JButton btnConPoda = new JButton("Ejecutar Con Poda");
+        JButton btnEjecutar = new JButton("Ejecutar");
         comboCaminos = new JComboBox<>();
         comboCaminos.addItem("Seleccionar camino...");
-        panelBotones.add(btnCargar);
-        panelBotones.add(btnSinPoda);
-        panelBotones.add(btnConPoda);
-        panelBotones.add(comboCaminos);
 
+        panelBotones.add(btnCargar);
+        panelBotones.add(btnEjecutar);
+        panelBotones.add(comboCaminos);
         add(panelBotones, BorderLayout.NORTH);
 
-        modeloResultados = new DefaultTableModel(new Object[]{"Tamaño", "Tiempo Sin Poda (ms)", "Tiempo Con Poda (ms)", "Caminos Sin Poda", "Caminos Con Poda"}, 0);
+        modeloResultados = new DefaultTableModel(new Object[]{"Tamaño", "Tiempo (ms)", "Llamadas"}, 0);
         tablaResultados = new JTable(modeloResultados);
         add(new JScrollPane(tablaResultados), BorderLayout.SOUTH);
 
@@ -49,11 +45,9 @@ public class VentanaPrincipal extends JFrame {
 
         btnCargar.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
-            int result = chooser.showOpenDialog(this);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                File archivo = chooser.getSelectedFile();
+            if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 try {
-                    controlador.cargarGrilla(archivo.getAbsolutePath());
+                    controlador.cargarGrilla(chooser.getSelectedFile().getAbsolutePath());
                     mostrarGrilla(controlador.getGrilla());
                     modeloResultados.setRowCount(0);
                     comboCaminos.removeAllItems();
@@ -64,22 +58,15 @@ public class VentanaPrincipal extends JFrame {
             }
         });
 
-        btnSinPoda.addActionListener(e -> {
-            controlador.ejecutarSinPoda();
-            actualizarResultados();
-            cargarCaminos();
-        });
-
-        btnConPoda.addActionListener(e -> {
-            controlador.ejecutarConPoda();
+        btnEjecutar.addActionListener(e -> {
+            controlador.ejecutar();
             actualizarResultados();
             cargarCaminos();
         });
 
         comboCaminos.addActionListener(e -> {
             if (comboCaminos.getSelectedIndex() > 0) {
-                int index = comboCaminos.getSelectedIndex() - 1;
-                List<int[]> camino = controlador.getCaminosValidos().get(index);
+                List<int[]> camino = controlador.getCaminosValidos().get(comboCaminos.getSelectedIndex() - 1);
                 resaltarCamino(camino);
             }
         });
@@ -103,6 +90,7 @@ public class VentanaPrincipal extends JFrame {
                 panelGrilla.add(label);
             }
         }
+
         panelGrilla.revalidate();
         panelGrilla.repaint();
     }
@@ -115,11 +103,7 @@ public class VentanaPrincipal extends JFrame {
                 celdas[i][j].setBackground(Color.WHITE);
             }
         }
-        for (int[] paso : camino) {
-            int i = paso[0];
-            int j = paso[1];
-            celdas[i][j].setBackground(Color.YELLOW);
-        }
+        camino.forEach(paso -> celdas[paso[0]][paso[1]].setBackground(Color.YELLOW));
     }
 
     private void actualizarResultados() {
@@ -130,8 +114,7 @@ public class VentanaPrincipal extends JFrame {
     private void cargarCaminos() {
         comboCaminos.removeAllItems();
         comboCaminos.addItem("Seleccionar camino...");
-        List<List<int[]>> caminos = controlador.getCaminosValidos();
-        for (int i = 0; i < caminos.size(); i++) {
+        for (int i = 0; i < controlador.getCaminosValidos().size(); i++) {
             comboCaminos.addItem("Camino " + (i + 1));
         }
     }
