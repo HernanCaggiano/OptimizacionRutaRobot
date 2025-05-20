@@ -25,24 +25,35 @@ public class VentanaPrincipal extends JFrame {
 
         controlador = new ControladorRobot();
 
+        // Panel superior con botones
         JPanel panelBotones = new JPanel();
         JButton btnCargar = new JButton("Cargar Archivo");
         JButton btnEjecutar = new JButton("Ejecutar");
         comboCaminos = new JComboBox<>();
         comboCaminos.addItem("Seleccionar camino...");
-
         panelBotones.add(btnCargar);
         panelBotones.add(btnEjecutar);
         panelBotones.add(comboCaminos);
         add(panelBotones, BorderLayout.NORTH);
 
+        //Panel de grilla
+        panelGrilla = new JPanel();
+        JScrollPane scrollGrilla = new JScrollPane(panelGrilla);
+
+        // Tabla de resultados
         modeloResultados = new DefaultTableModel(new Object[]{"Tamaño", "Tiempo (ms)", "Llamadas"}, 0);
         tablaResultados = new JTable(modeloResultados);
-        add(new JScrollPane(tablaResultados), BorderLayout.SOUTH);
+        JScrollPane scrollTabla = new JScrollPane(tablaResultados);
+        scrollTabla.setPreferredSize(new Dimension(900, 120));
 
-        panelGrilla = new JPanel();
-        add(panelGrilla, BorderLayout.CENTER);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollGrilla, scrollTabla);
+        splitPane.setResizeWeight(0.85);
+        splitPane.setDividerSize(5);
+        splitPane.setOneTouchExpandable(true);
 
+        add(splitPane, BorderLayout.SOUTH);
+
+        // Acciones
         btnCargar.addActionListener(e -> {
             JFileChooser chooser = new JFileChooser();
             if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {

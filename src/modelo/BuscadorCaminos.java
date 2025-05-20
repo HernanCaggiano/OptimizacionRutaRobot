@@ -28,7 +28,7 @@ public class BuscadorCaminos {
         suma += grilla.getValor(i, j);
         camino.add(new int[]{i, j});
 
-        if (i == grilla.getFilas() - 1 && j == grilla.getColumnas() - 1) {
+        if (extremoGrilla(i, j)) {
             caminosValidos.add(new ArrayList<>(camino));
             camino.remove(camino.size() - 1);
             return;
@@ -44,6 +44,10 @@ public class BuscadorCaminos {
         buscar(i, j + 1, suma, camino);
         camino.remove(camino.size() - 1);
     }
+
+	private boolean extremoGrilla(int i, int j) {
+		return i == grilla.getFilas() - 1 && j == grilla.getColumnas() - 1;
+	}
 
     public List<List<int[]>> getCaminosValidos() { return caminosValidos; }
     public int getLlamadasConPoda() { return llamadasConPoda; }
