@@ -3,46 +3,46 @@ package modelo;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-
+/**
+ * Modelo de la grilla: almacena una matriz de cargas (+1 / -1).
+ */
 public class Grilla {
-	private int[][] matriz;
-    private int filas;
-    private int columnas;
+    private final int[][] matriz;
+    private final int filas;
+    private final int columnas;
 
-    public Grilla(String path) throws IOException {
-        cargarDesdeArchivo(path);
+    public Grilla(String rutaArchivo) throws IOException {
+        String[] lineas = leerLineas(rutaArchivo);
+        this.filas     = lineas.length;
+        this.columnas  = contarColumnas(lineas[0]);
+        this.matriz    = inicializarMatriz(lineas);
     }
 
-    private void cargarDesdeArchivo(String path) throws IOException {
-        List<int[]> temp = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                linea = linea.trim();
-                if (linea.isEmpty()) continue;
-                String[] tokens = linea.split("\\s+");
-                int[] fila = Arrays.stream(tokens).mapToInt(Integer::parseInt).toArray();
-                temp.add(fila);
+    private String[] leerLineas(String ruta) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(ruta))) {
+            return br.lines().toArray(String[]::new);
+        }
+    }
+
+    private int contarColumnas(String primeraLinea) {
+        return primeraLinea.trim().split("\\s+").length;
+    }
+
+    private int[][] inicializarMatriz(String[] lineas) {
+        int[][] m = new int[filas][columnas];
+        for (int i = 0; i < filas; i++) {
+            String[] tokens = lineas[i].trim().split("\\s+");
+            for (int j = 0; j < columnas; j++) {
+                m[i][j] = Integer.parseInt(tokens[j]);
             }
         }
-        filas = temp.size();
-        columnas = temp.get(0).length;
-        matriz = new int[filas][columnas];
-        for (int i = 0; i < filas; i++) {
-            matriz[i] = temp.get(i);
-        }
+        return m;
     }
 
+    /** Devuelve el valor (+1 ó -1) de la casilla (i,j). */
     public int getValor(int i, int j) {
         return matriz[i][j];
-    }
-
-    public int[][] getMatriz() {
-        return matriz;
     }
 
     public int getFilas() {
@@ -51,5 +51,10 @@ public class Grilla {
 
     public int getColumnas() {
         return columnas;
+    }
+
+    /** Devuelve la matriz completa (para la vista). */
+    public int[][] getMatriz() {
+        return matriz;
     }
 }

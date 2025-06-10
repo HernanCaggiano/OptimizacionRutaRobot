@@ -1,44 +1,51 @@
 package controlador;
 
+import modelo.Grilla;
+import modelo.BuscadorCaminos;
+import modelo.GeneradorGrilla;
+
 import java.io.IOException;
-import java.util.List;
 
-import modelo.*;
-
+/**
+ * Controlador principal: enlaza Modelo y Vista.
+ */
 public class ControladorRobot {
-	private Grilla grilla;
+    private Grilla grilla;
     private BuscadorCaminos buscador;
 
-    public void cargarGrilla(String path) throws IOException {
-        grilla = new Grilla(path);
+    /** Carga la grilla desde un archivo */
+    public void cargarGrilla(String rutaArchivo) throws IOException {
+        grilla  = new Grilla(rutaArchivo);
         buscador = new BuscadorCaminos(grilla);
     }
 
-    public void ejecutar() {
-        if (buscador != null) buscador.buscarConPoda();
+    /** Ejecuta sin poda y con poda */
+    public void iniciarBusqueda() {
+        buscador.ejecutarSinPoda();
+        buscador.ejecutarConPoda();
     }
 
-    public Object[] getResultados() {
-        return new Object[]{
-            grilla.getFilas() + "x" + grilla.getColumnas(),
-            buscador.getTiempoConPoda(),
-            buscador.getLlamadasConPoda()
-        };
+    // Exponer el buscador para suscribir listeners
+    public BuscadorCaminos getBuscador() {
+        return buscador;
+    }
+    public void generarYCargarGrillaAleatoria(int filas, int columnas, String rutaArchivo) throws IOException {
+        GeneradorGrilla.guardarAleatoriaEnArchivo(filas, columnas, rutaArchivo);
+        cargarGrilla(rutaArchivo);
     }
 
-    public List<List<int[]>> getCaminosValidos() {
-        return buscador.getCaminosValidos();
+    // --- Métodos de acceso para la Vista ---
+    public int[][] getMatriz() { return grilla.getMatriz(); }
+    public int getFilas()      { return grilla.getFilas(); }
+    public int getColumnas()   { return grilla.getColumnas(); }
+    public long getTiempoSinPoda()   { return buscador.getTiempoSinPoda(); }
+    public long getTiempoConPoda()   { return buscador.getTiempoConPoda(); }
+    public long getLlamadasSinPoda() { return buscador.getLlamadasSinPoda(); }
+    public long getLlamadasConPoda() { return buscador.getLlamadasConPoda(); }
+    public java.util.List<java.util.List<java.awt.Point>> getCaminosSinPoda() {
+        return buscador.getCaminosSinPoda();
     }
-
-    public int[][] getGrilla() {
-        return grilla.getMatriz();
-    }
-
-    public int getFilas() {
-        return grilla.getFilas();
-    }
-
-    public int getColumnas() {
-        return grilla.getColumnas();
+    public java.util.List<java.util.List<java.awt.Point>> getCaminosConPoda() {
+        return buscador.getCaminosConPoda();
     }
 }
